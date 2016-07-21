@@ -1,6 +1,6 @@
 # StackedStateMachine
 A lightweight implementation for a stacked state machine in C#. It's designed to control any actions of an NPC in a game.
-Part of the project is sample console application. It simulates the actions of a carrier with verbose output.
+Part of the project is a sample console application simulating the actions of a carrier with verbose output.
 
 ## Usage
 Create a new instance:
