@@ -17,9 +17,9 @@ namespace StackedStateMachine
             stateStart.onActivate((IEvent)null);
         }
         public IState State { get { return stateStack.Peek(); } }
-        public void addTransition<stateType1, eventType>(stateType1 state1, eventType e, StateContructor stateConstructor)
-            where stateType1 : Type
-            where eventType : Type {
+        public void addTransition<TState, TEvent>(TState state1, TEvent e, StateContructor stateConstructor)
+            where TState : Type
+            where TEvent : Type {
             transitions.Add(new Tuple<Type, Type>(state1, e), stateConstructor);
         }
 
@@ -31,13 +31,13 @@ namespace StackedStateMachine
                 return null;
             var stateType = state.GetType();
             var eventType = e.GetType();
-            if (e is AbortEvent) {
+            if (e.GetType() == typeof(AbortEvent)) {
                 state?.onDeactivate(new AbortEvent());
                 stateStack.Pop();
                 dynamic newState = stateStack.Peek();
                 return newState?.onActivate(new AbortEvent());
             }
-            else if (e is DoneEvent) {
+            else if (e.GetType() == typeof(DoneEvent)) {
                 state?.onDeactivate(new DoneEvent());
                 stateStack.Pop();
                 dynamic newState = stateStack.Peek();
@@ -51,7 +51,7 @@ namespace StackedStateMachine
                 stateStack.Push(newState);
                 return newState.onActivate(ev);
             }
-            // the state machine is not valid
+            // an event occured with no valid transition
             Debug.Assert(false);
             return null;
         }
