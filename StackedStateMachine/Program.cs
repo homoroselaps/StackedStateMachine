@@ -123,11 +123,15 @@ namespace StackedStateMachine
             Console.WriteLine("Write 'carry' to send a CarryEvent");
             Console.WriteLine("Write 'abort' to send an AbortEvent");
             Console.WriteLine("Press 'enter' to step forward");
+            
+            // setup state machine
             StackedStateMachine ssm = new StackedStateMachine(new IdleState());
             ssm.addTransition(typeof(IdleState), typeof(CarryEvent), () => { return new CarryState(); });
             ssm.addTransition(typeof(CarryState), typeof(DropEvent), () => { return new DropState(); });
             ssm.addTransition(typeof(CarryState), typeof(PathingEvent), () => { return new PathingState(); });
             ssm.addTransition(typeof(CarryState), typeof(PickEvent), () => { return new PickState(); });
+            
+            // run the state machine
             while (true) {
                 string input = Console.ReadLine().ToLowerInvariant();
                 if (input == "exit")
