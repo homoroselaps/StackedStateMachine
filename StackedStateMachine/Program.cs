@@ -23,30 +23,13 @@ namespace StackedStateMachine
             printDebug("onGameTick", null);
             return base.onGameTick();
         }
-        public override IEvent onActivate(IEvent e) {
+        public override IEvent activateState(IEvent e) {
             printDebug("onActivate", e);
-            return base.onActivate(e);
+            return base.activateState(e);
         }
-        public override IEvent onActivate(AbortEvent e) {
-            printDebug("onActivate", e);
-            return base.onActivate(e);
-        }
-        public override IEvent onActivate(DoneEvent e) {
-            printDebug("onActivate", e);
-            return base.onActivate(e);
-        }
-
-        public override void onDeactivate(IEvent e) {
+        public override void deactivateState(IEvent e) {
             printDebug("onDeactivate", e);
-            base.onDeactivate(e);
-        }
-        public override void onDeactivate(AbortEvent e) {
-            printDebug("onDeactivate", e);
-            base.onDeactivate(e);
-        }
-        public override void onDeactivate(DoneEvent e) {
-            printDebug("onDeactivate", e);
-            base.onDeactivate(e);
+            base.deactivateState(e);
         }
     }
     class DummyState: DebugState
@@ -91,7 +74,9 @@ namespace StackedStateMachine
     }
     class CarryState : DebugState
     {
-        public CarryState() { }
+        public CarryState() {
+            addOnActivateHandler(typeof(CarryEvent), (IEvent e) => { return onActivate((CarryEvent)e); });
+        }
 
         private int stepCounter;
         private Point from, to;
@@ -114,21 +99,18 @@ namespace StackedStateMachine
             }
         }
         public IEvent onActivate(CarryEvent e) {
-            base.onActivate(e);
             from = e.from;
             to = e.to;
             return controlAction();            
         }
-        public override IEvent onActivate(DoneEvent e) {
-            base.onActivate(e);
+        protected override IEvent onActivate(DoneEvent e) {
             return controlAction();
         }
     }
     class IdleState: DebugState
     {
         public IdleState() { }
-        public override IEvent onActivate(AbortEvent e) {
-            base.onActivate(e);
+        protected override IEvent onActivate(AbortEvent e) {
             return null;
         }
     }
@@ -159,8 +141,7 @@ namespace StackedStateMachine
                     ssm.raiseEvent(new AbortEvent());
                 else if (input == "") {
                     var e = ssm.State.onGameTick();
-                    if (e != null)
-                        ssm.raiseEvent(e);
+                    if (e != null) ssm.raiseEvent(e);
                 }
             }
         }
