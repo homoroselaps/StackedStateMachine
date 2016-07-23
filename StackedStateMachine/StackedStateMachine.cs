@@ -44,12 +44,11 @@ namespace StackedStateMachine
                 return newState?.onActivate(new DoneEvent());
             }
             else if (transitions.ContainsKey(new Tuple<Type, Type>(stateType, eventType))) {
-                var constr = transitions[new Tuple<Type, Type>(stateType, eventType)];
                 dynamic ev = e;
                 state?.onDeactivate(ev);
-                dynamic newState = constr();
+                dynamic newState = transitions[new Tuple<Type, Type>(stateType, eventType)]();
                 stateStack.Push(newState);
-                return newState.onActivate(ev);
+                return newState?.onActivate(ev);
             }
             // an event occured with no valid transition
             Debug.Assert(false);

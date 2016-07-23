@@ -135,9 +135,6 @@ namespace StackedStateMachine
 
     class Program
     {
-        static State createCS() {
-            return new CarryState();
-        }
         static void Main(string[] args) {
             Console.WriteLine("Welome to the StackedStateMachine Testing Environment");
             Console.WriteLine("Write 'exit' to end the program");
