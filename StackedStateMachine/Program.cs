@@ -19,10 +19,6 @@ namespace StackedStateMachine
         private void printDebug(string funcName, IEvent e) {
             Console.WriteLine($"{GetType().ToString(),10}.{funcName}({e?.GetType().ToString()})");
         }
-        public override IEvent onGameTick() {
-            printDebug("onGameTick", null);
-            return base.onGameTick();
-        }
         public override IEvent onActivate(IEvent e) {
             printDebug("onActivate", e);
             return base.onActivate(e);
@@ -34,6 +30,11 @@ namespace StackedStateMachine
         public override IEvent onActivate(DoneEvent e) {
             printDebug("onActivate", e);
             return base.onActivate(e);
+        }
+
+        public override IEvent onRecieveEvent(IEvent e) {
+            printDebug("onRecieveEvent", e);
+            return base.onRecieveEvent(e);
         }
 
         public override void onDeactivate(IEvent e) {
@@ -55,8 +56,8 @@ namespace StackedStateMachine
         public DummyState(int counter) {
             this.counter = counter;
         }
-        override public IEvent onGameTick() {
-            base.onGameTick();
+        public IEvent onRecieveEvent(TimerEvent e) {
+            base.onRecieveEvent(e);
             counter--;
             if (counter <= 0) return new DoneEvent();
             return null;
@@ -141,9 +142,11 @@ namespace StackedStateMachine
             Console.WriteLine("Write 'carry' to send a CarryEvent");
             Console.WriteLine("Write 'abort' to send an AbortEvent");
             Console.WriteLine("Press 'enter' to step forward");
-            
+
             // setup state machine
-            StackedStateMachine ssm = new StackedStateMachine(new IdleState());
+            StackedStateMachine ssm = new StackedStateMachine();
+            ssm.addTransition(null, typeof(TimerEvent), () => { return new IdleState(); });
+            ssm.addTransition(null, typeof(CarryEvent), () => { return new CarryState(); });
             ssm.addTransition(typeof(IdleState), typeof(CarryEvent), () => { return new CarryState(); });
             ssm.addTransition(typeof(CarryState), typeof(DropEvent), () => { return new DropState(); });
             ssm.addTransition(typeof(CarryState), typeof(PathingEvent), () => { return new PathingState(); });
@@ -159,8 +162,7 @@ namespace StackedStateMachine
                 else if (input == "abort")
                     ssm.raiseEvent(new AbortEvent());
                 else if (input == "") {
-                    var e = ssm.State.onGameTick();
-                    if (e != null) ssm.raiseEvent(e);
+                    ssm.raiseEvent(new TimerEvent());
                 }
             }
         }

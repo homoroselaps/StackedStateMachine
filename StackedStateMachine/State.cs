@@ -7,17 +7,13 @@ using System.Diagnostics;
 
 namespace StackedStateMachine
 {
-    public interface IState
+    public class State
     {
-        IEvent onGameTick();
-    }
-    public class State: IState
-    {
-        public virtual IEvent onGameTick() { return null; }
-
         public virtual IEvent onActivate(AbortEvent e) { return e; }
         public virtual IEvent onActivate(DoneEvent e) { return null; }
         public virtual IEvent onActivate(IEvent e) { return null; }
+
+        public virtual IEvent onRecieveEvent(IEvent e) { return null; }
 
         public virtual void onDeactivate(DoneEvent e) { /* do some cleanup */ }
         public virtual void onDeactivate(AbortEvent e) { /* do some cleanup */ }
